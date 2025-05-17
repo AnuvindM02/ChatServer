@@ -1,0 +1,6 @@
+services:
+  chatserver.api:
+    image: ${DOCKER_REGISTRY-}chatserverapi
+    build:
+      context: .
+      dockerfile: ChatServer.API/Dockerfile
