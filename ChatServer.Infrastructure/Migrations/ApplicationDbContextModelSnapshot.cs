@@ -63,8 +63,8 @@ namespace ChatServer.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -77,9 +77,11 @@ namespace ChatServer.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatServer.Domain.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("AuthUserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AuthUserId"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -102,7 +104,7 @@ namespace ChatServer.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthUserId");
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -112,8 +114,8 @@ namespace ChatServer.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatServer.Domain.Entities.UserConversation", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uuid");

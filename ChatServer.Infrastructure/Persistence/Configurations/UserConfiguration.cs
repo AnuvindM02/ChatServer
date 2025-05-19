@@ -9,7 +9,7 @@ namespace ChatServer.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.ToTable("Users");
-            builder.HasKey(x => x.Id);
+            builder.HasKey(x => x.AuthUserId);
             builder.Property(x => x.Username)
                 .HasMaxLength(50)
                 .IsRequired();

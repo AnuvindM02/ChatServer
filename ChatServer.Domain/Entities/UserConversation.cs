@@ -2,7 +2,7 @@
 {
     public class UserConversation
     {
-        public Guid UserId { get; set; }
+        public required int UserId { get; set; }
         public required User User { get; set; }
         public Guid ConversationId { get; set; }
         public required Conversation Conversation { get; set; }

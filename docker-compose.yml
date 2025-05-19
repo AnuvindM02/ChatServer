@@ -1,6 +1,40 @@
 services:
   chatserver.api:
-    image: ${DOCKER_REGISTRY-}chatserverapi
+    image: chatserverapi
     build:
       context: .
       dockerfile: ChatServer.API/Dockerfile
+    environment:
+     - SQL_HOST=postgres
+     - SQL_PORT=5432
+     - SQL_DB=ChatDB
+     - SQL_USER=postgres
+     - SQL_PASSWORD=admin
+     - ChatClientIP=http://localhost:4200
+    ports:
+      - "7002:8080"
+    depends_on:
+     - postgres
+    networks:
+      - chatserver-network
+
+  postgres:
+   image: postgres:16
+   restart: always
+   environment:
+    - POSTGRES_DB=ChatDB
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=admin
+   ports:
+    - "6544:5432"
+   volumes:
+    - chatdata:/var/lib/postgresql/data
+   networks:
+    - chatserver-network
+
+volumes:
+  chatdata:
+  
+networks:
+ chatserver-network:
+  driver: bridge
