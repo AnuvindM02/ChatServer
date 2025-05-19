@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using ChatServer.Application.RabbitMq;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -14,6 +15,8 @@ namespace ChatServer.Application
             services.AddFluentValidationAutoValidation()
                     .AddFluentValidationClientsideAdapters();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddSingleton<IRabbitMqNewUserConsumer, RabbitMqNewUserConsumer>();
+            services.AddHostedService<RabbitMqNewUserHostedService>();
             return services;
         }
     }
