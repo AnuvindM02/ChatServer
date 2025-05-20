@@ -23,16 +23,38 @@ namespace ChatServer.Application.RabbitMq
             string userName = _configuration["RabbitMq:UserName"]!;
             string password = _configuration["RabbitMq:Password"]!;
             string port = _configuration["RabbitMq:Port"]!;
+            int retryCount = 10;
 
-            ConnectionFactory connectionFactory = new ConnectionFactory()
+            var factory = new ConnectionFactory()
             {
                 HostName = hostName,
                 UserName = userName,
                 Password = password,
                 Port = Convert.ToInt32(port)
             };
-            _connection = connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
+
+            for (int i = 1; i <= retryCount; i++)
+            {
+                try
+                {
+                    _logger.LogInformation("Attempting to connect to RabbitMQ... Attempt #{Attempt}", i);
+                    _connection = factory.CreateConnection();
+                    _channel = _connection.CreateModel();
+                    _logger.LogInformation("✅ Connected to RabbitMQ.");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "❌ Failed to connect to RabbitMQ. Attempt #{Attempt}", i);
+                    if (i == retryCount)
+                    {
+                        _logger.LogError("🛑 Giving up after {RetryCount} attempts", retryCount);
+                        throw;
+                    }
+
+                    Thread.Sleep(3000); // Wait 3 seconds before retrying
+                }
+            }
         }
 
         public void Dispose()
@@ -56,15 +78,12 @@ namespace ChatServer.Application.RabbitMq
             EventingBasicConsumer consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (sender, args) =>
             {
-                _logger.LogWarning("________Running hosted consumer______________________");
                 var body = args.Body.ToArray();
                 var message = System.Text.Encoding.UTF8.GetString(body);
                 if (message != null)
                 {
                     var newUserMessage = JsonSerializer.Deserialize<NewUserMessage>(message)!;
-                    _logger.LogInformation($"Chat Service Received Message: {newUserMessage.UserId}");
                 }
-                _logger.LogWarning("Consumer attached to queue: " + queueName);
             };
             _channel.BasicConsume(queueName, autoAck: true, consumer);
         }
