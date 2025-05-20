@@ -6,15 +6,12 @@ namespace ChatServer.Application.RabbitMq
     public class RabbitMqNewUserHostedService: IHostedService
     {
         private readonly IRabbitMqNewUserConsumer _rabbitMqNewUserConsumer;
-        private readonly ILogger<RabbitMqNewUserHostedService> _logger;
-        public RabbitMqNewUserHostedService(IRabbitMqNewUserConsumer rabbitMqNewUserConsumer, ILogger<RabbitMqNewUserHostedService> logger)
+        public RabbitMqNewUserHostedService(IRabbitMqNewUserConsumer rabbitMqNewUserConsumer)
         {
             _rabbitMqNewUserConsumer = rabbitMqNewUserConsumer;
-            _logger = logger;
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogWarning("hosted service started!!!!!!!");
             _rabbitMqNewUserConsumer.Consume();
             return Task.CompletedTask;
         }
