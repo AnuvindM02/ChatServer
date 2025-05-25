@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatServer.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250517142827_Initial_Migration")]
+    [Migration("20250525072023_Initial_Migration")]
     partial class Initial_Migration
     {
         /// <inheritdoc />
@@ -109,8 +109,10 @@ namespace ChatServer.Infrastructure.Migrations
 
                     b.HasKey("AuthUserId");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("Username");
 
                     b.ToTable("Users", (string)null);
                 });

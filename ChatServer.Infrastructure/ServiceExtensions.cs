@@ -1,4 +1,6 @@
-﻿using ChatServer.Infrastructure.Persistence;
+﻿using ChatServer.Application.Interfaces.Repositories;
+using ChatServer.Infrastructure.Persistence;
+using ChatServer.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +50,11 @@ namespace ChatServer.Infrastructure
                     }
                 };
             });
+
+
+            //Repository Services
+            services.AddScoped<IUnitOfWork, UnitOfWork>(); //Unit of Work
+            services.AddScoped<IUserRepository, UserRepository>(); //User Repository
             return services;
         }
     }
