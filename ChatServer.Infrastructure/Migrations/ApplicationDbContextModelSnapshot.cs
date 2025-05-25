@@ -106,8 +106,10 @@ namespace ChatServer.Infrastructure.Migrations
 
                     b.HasKey("AuthUserId");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("Username");
 
                     b.ToTable("Users", (string)null);
                 });

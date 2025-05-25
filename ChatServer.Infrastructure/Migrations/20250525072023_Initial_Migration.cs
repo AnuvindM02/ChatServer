@@ -127,10 +127,15 @@ namespace ChatServer.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
                 table: "Users",
-                column: "Username",
-                unique: true);
+                column: "Username");
         }
 
         /// <inheritdoc />
