@@ -1,7 +1,10 @@
-﻿using ChatServer.Application.Interfaces.Repositories;
+﻿using ChatServer.Application.Interfaces;
+using ChatServer.Application.Interfaces.Repositories;
+using ChatServer.Infrastructure.Identity;
 using ChatServer.Infrastructure.Persistence;
 using ChatServer.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +47,7 @@ namespace ChatServer.Infrastructure
                     IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
                     {
                         var httpClient = new HttpClient();
-                        var jwks = httpClient.GetStringAsync(configuration["Jwt:JWKS"]).Result;
+                        var jwks = httpClient.GetStringAsync($"{configuration["Jwt:Issuer"]}/.well-known/jwks.json").Result;
                         var keys = new JsonWebKeySet(jwks).Keys;
                         return keys;
                     }
@@ -54,7 +57,9 @@ namespace ChatServer.Infrastructure
 
             //Repository Services
             services.AddScoped<IUnitOfWork, UnitOfWork>(); //Unit of Work
-            services.AddScoped<IUserRepository, UserRepository>(); //User Repository
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
             return services;
         }
     }

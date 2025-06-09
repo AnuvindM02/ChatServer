@@ -20,12 +20,9 @@ namespace ChatServer.Application
             CreateMap<CreateUserCommand, User>()
                 .ForMember(dest => dest.AuthUserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.Username,
-                opt => opt.MapFrom(
-                    src => $"{src.FirstName}" +
-                $"{(src.MiddleName != "" ? (" " + src.MiddleName) : "")}" +
-                $"{(src.LastName != "" ? (" " + src.LastName) : "")}")
-                );
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src=> src.FirstName))
+                .ForMember(dest => dest.Middlename, opt => opt.MapFrom(src => src.MiddleName))
+                .ForMember(dest => dest.Lastname, opt => opt.MapFrom(src => src.LastName));
 
         }
     }

@@ -10,13 +10,12 @@ namespace ChatServer.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("Users");
             builder.HasKey(x => x.AuthUserId);
-            builder.Property(x => x.Username)
+            builder.Property(x => x.FirstName)
                 .HasMaxLength(50)
                 .IsRequired();
             builder.Property(x => x.Email).IsRequired();
             builder.HasIndex(x => x.Email).IsUnique();
-            builder.Property(x => x.Username).IsRequired();
-            builder.HasIndex(x => x.Username);
+            builder.Property(x => x.FirstName).IsRequired();
         }
     }
 }
