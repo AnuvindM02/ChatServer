@@ -24,8 +24,8 @@ namespace ChatServer.Infrastructure.Repositories
                 Id = Guid.NewGuid(),
                 ConversationId = messageDto.ConversationId,
                 SenderId = messageDto.SenderId,
-                Content = messageDto.Content,
-                CreatedAt = messageDto.CreatedAt,
+                Content = messageDto.Text,
+                CreatedAt = messageDto.TimeStamp,
                 Conversation = await _context.Conversations.FindAsync(messageDto.ConversationId)
                     ?? throw new KeyNotFoundException($"Conversation not found: ConversationId - {messageDto.ConversationId}"),
                 Sender = await _context.Users.FindAsync(messageDto.SenderId)
@@ -50,8 +50,8 @@ namespace ChatServer.Infrastructure.Repositories
                     ConversationId = m.ConversationId,
                     SenderId = m.SenderId,
                     SenderMailId = m.Sender.Email,
-                    Content = m.Content,
-                    CreatedAt = m.CreatedAt
+                    Text = m.Content,
+                    TimeStamp = m.CreatedAt
                 })
                 .ToListAsync();
         }

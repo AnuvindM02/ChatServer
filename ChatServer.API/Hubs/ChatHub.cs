@@ -2,9 +2,12 @@
 using ChatServer.Application.DTOs;
 using ChatServer.Application.Interfaces;
 using ChatServer.Application.Interfaces.Repositories;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatServer.API.Hubs
 {
+    [Authorize]
     public class ChatHub: Hub
     {
         private readonly IChatRepository _chatService;
@@ -15,16 +18,16 @@ namespace ChatServer.API.Hubs
             _chatService = _unitOfWork.CustomRepository<IChatRepository>();
         }
 
-        public async Task SendPrivateMessage(ChatMessageDto message, CancellationToken cancellationToken)
+        public async Task SendPrivateMessage(ChatMessageDto message)
         {
-            var savedMessage = await _chatService.SaveMessageAsync(message);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                var savedMessage = await _chatService.SaveMessageAsync(message);
+                await _unitOfWork.SaveChangesAsync();
 
-            var participantIds = await _chatService.GetParticipantUserIdsAsync(message.ConversationId);
-            foreach (var participantId in participantIds.Where(id => id != message.SenderId))
-            {
-                await Clients.User(participantId.ToString()).SendAsync("ReceiveMessage", Context.UserIdentifier, savedMessage);
-            }
+                var participantIds = await _chatService.GetParticipantUserIdsAsync(message.ConversationId);
+                foreach (var participantId in participantIds.Where(id => id != message.SenderId))
+                {
+                    await Clients.User(participantId.ToString()).SendAsync("ReceiveMessage", Context.UserIdentifier, savedMessage);
+                }
         }
 
         public async Task SendGroupMessage(ChatMessageDto message, CancellationToken cancellationToken)
@@ -46,13 +49,14 @@ namespace ChatServer.API.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            // You can add user connection tracking here if needed
+            var userId = Context.UserIdentifier;
+            Console.WriteLine($"✅ User connected: {userId}");
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            // You can add user disconnection handling here if needed
+            Console.WriteLine($"❌ User disconnected: {Context.UserIdentifier}");
             await base.OnDisconnectedAsync(exception);
         }
     }

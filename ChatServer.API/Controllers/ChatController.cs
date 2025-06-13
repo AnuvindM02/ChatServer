@@ -6,6 +6,7 @@ using MediatR;
 using ChatServer.Application.Queries;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatServer.API.Controllers
 {
@@ -70,6 +71,7 @@ namespace ChatServer.API.Controllers
         }
 
         [HttpGet("conversations")]
+        [Authorize]
         public async Task<ActionResult<GetAllContactsDto>> GetConversations(DateTimeOffset? Cursor, string? Search, CancellationToken cancellationToken, int Limit = 10)
         {
             if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId))
