@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ChatServer.API.Hubs;
 using ChatServer.API.Middlewares;
 using ChatServer.Application;
@@ -28,8 +29,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSignalR();
-
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -62,12 +66,13 @@ if (!app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-if(app.Environment.IsProduction())
+if (app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
 }
 
 app.UseCors("AllowChatClient");
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

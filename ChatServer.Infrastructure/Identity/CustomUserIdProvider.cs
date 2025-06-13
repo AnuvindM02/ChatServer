@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChatServer.Infrastructure.Identity
@@ -7,7 +7,8 @@ namespace ChatServer.Infrastructure.Identity
     {
         public string? GetUserId(HubConnectionContext connection)
         {
-            return connection.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var userIdClaim = connection.User?.FindFirst(ClaimTypes.NameIdentifier);
+            return userIdClaim?.Value;
         }
     }
 }
