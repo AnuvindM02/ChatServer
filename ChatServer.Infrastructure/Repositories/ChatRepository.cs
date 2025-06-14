@@ -71,7 +71,7 @@ namespace ChatServer.Infrastructure.Repositories
                                 .Select(g => g.Key)
                                 .FirstOrDefaultAsync(cancellationToken);
 
-            if(existingConversationId != Guid.Empty)
+            if (existingConversationId != Guid.Empty)
                 return existingConversationId;
 
             var conversation = new Conversation
@@ -86,12 +86,12 @@ namespace ChatServer.Infrastructure.Repositories
             var userConversations = new[]
             {
                 new UserConversation { UserId = user1Id, Conversation = conversation,
-                User = await _context.Users.FindAsync(user1Id)
+                User = await _context.Users.FindAsync(user1Id, cancellationToken)
                         ?? throw new KeyNotFoundException($"User not found: UserId - {user1Id}"),
                 ConversationId = conversation.Id},
 
                 new UserConversation { UserId = user2Id, Conversation = conversation,
-                    User = await _context.Users.FindAsync(user2Id)
+                    User = await _context.Users.FindAsync(user2Id, cancellationToken)
                         ?? throw new KeyNotFoundException($"User not found: UserId - {user2Id}"),
                 ConversationId = conversation.Id}
             };
@@ -128,9 +128,7 @@ namespace ChatServer.Infrastructure.Repositories
         public async Task AddUserToGroupAsync(Guid conversationId, int userId)
         {
             var conversation = await _context.Conversations
-                .FirstOrDefaultAsync(c => c.Id == conversationId && c.Type == ConversationType.Group);
-
-            if (conversation == null)
+                .FirstOrDefaultAsync(c => c.Id == conversationId && c.Type == ConversationType.Group) ??
                 throw new ArgumentException("Group conversation not found");
 
             var userConversation = new UserConversation

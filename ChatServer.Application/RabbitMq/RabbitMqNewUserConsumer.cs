@@ -68,6 +68,7 @@ namespace ChatServer.Application.RabbitMq
         {
             _channel.Dispose();
             _connection.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public void Consume()
@@ -82,7 +83,7 @@ namespace ChatServer.Application.RabbitMq
 
             _channel.QueueBind(queueName, exchangeName, routingKey);
 
-            EventingBasicConsumer consumer = new EventingBasicConsumer(_channel);
+            EventingBasicConsumer consumer = new (_channel);
             consumer.Received += async (sender, args) =>
             {
                 using var scope = _serviceProvider.CreateScope();
