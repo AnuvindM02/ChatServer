@@ -37,13 +37,18 @@ namespace ChatServer.Infrastructure.Repositories
             return messageDto;
         }
 
-        public async Task<IEnumerable<ChatMessageDto>> GetConversationHistoryAsync(Guid conversationId, int skip = 0, int take = 50)
+        public async Task<IEnumerable<ChatMessageDto>> GetConversationHistoryAsync(Guid conversationId, DateTimeOffset? cursor, int limit)
         {
-            return await _context.Messages
-                .Where(m => m.ConversationId == conversationId)
-                .OrderByDescending(m => m.CreatedAt)
-                .Skip(skip)
-                .Take(take)
+            var query = _context.Messages
+                .Where(m => m.ConversationId == conversationId).AsNoTracking();
+
+            if (cursor.HasValue)
+            {
+                query = query.Where(m => m.CreatedAt < cursor.Value);
+            }
+
+            var messages = await query.OrderByDescending(m => m.CreatedAt)
+                .Take(limit)
                 .Select(m => new ChatMessageDto
                 {
                     Id = m.Id,
@@ -54,6 +59,8 @@ namespace ChatServer.Infrastructure.Repositories
                     TimeStamp = m.CreatedAt
                 })
                 .ToListAsync();
+
+            return messages;
         }
 
         public async Task<Guid> CreateP2PConversationAsync(int user1Id, int user2Id, CancellationToken cancellationToken)

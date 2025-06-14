@@ -33,10 +33,10 @@ namespace ChatServer.API.Controllers
         [HttpGet("conversations/{conversationId}/messages")]
         public async Task<ActionResult<IEnumerable<ChatMessageDto>>> GetConversationHistory(
             Guid conversationId,
-            [FromQuery] int skip = 0,
-            [FromQuery] int take = 50)
+            [FromQuery] DateTimeOffset? cursor,
+            [FromQuery] int limit = 10)
         {
-            var messages = await _chatService.GetConversationHistoryAsync(conversationId, skip, take);
+            var messages = await _chatService.GetConversationHistoryAsync(conversationId, cursor, limit);
             return Ok(messages);
         }
 
